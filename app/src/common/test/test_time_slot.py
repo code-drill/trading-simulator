@@ -3,6 +3,7 @@ from datetime import timedelta
 import arrow
 import pytest
 import pytz
+import time_machine
 from arrow import Arrow
 from assertpy import assert_that
 
@@ -305,3 +306,16 @@ def test_split_multiple_parts():
         expected_end = arrow.get("2024-01-01T00:00:00").shift(hours=i + 1)
         assert_that(time_slot.from_date).is_equal_to(expected_start)
         assert_that(time_slot.to_date).is_equal_to(expected_end)
+
+
+@time_machine.travel("2024-10-27 12:00:00", tick=False)
+def test_day_25_hours():
+    assert_that(TimeSlot.today("CET").split(3600)).is_length(25)
+
+@time_machine.travel("2024-03-31 12:00:00", tick=False)
+def test_day_23_hours():
+    assert_that(TimeSlot.today("CET").split(3600)).is_length(23)
+
+@time_machine.travel("2024-10-11 12:00:00", tick=False)
+def test_day_24_hours():
+    assert_that(TimeSlot.today("CET").split(3600)).is_length(24)

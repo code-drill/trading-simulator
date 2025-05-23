@@ -18,6 +18,11 @@ class TimeSlot:
     def empty() -> TimeSlot:
         return TimeSlot(Arrow.min, Arrow.min)
 
+    @classmethod
+    def today(cls, tz: str) -> TimeSlot:
+        return TimeSlot.at(arrow.now(tz).date(), tz)
+
+
     @singledispatchmethod
     @classmethod
     def at(cls, from_day: date | int, tz: str | datetime.tzinfo, to_day_exclusive: date | None = None) -> TimeSlot:
@@ -41,7 +46,7 @@ class TimeSlot:
 
         start_day = arrow.get(from_day, tzinfo=tz)
 
-        return cls(start_day, to_day_exclusive)
+        return cls(start_day.to(pytz.utc), to_day_exclusive.to(pytz.utc))
 
     def within(self, other: TimeSlot) -> bool:
         return not self.from_date < other.from_date and not self.to_date > other.to_date
@@ -79,6 +84,8 @@ class TimeSlot:
 
     def split(self, duration: timedelta | int) -> list[TimeSlot]:
         if isinstance(duration, int):
+            if duration < 1:
+                raise ValueError("duration must be positive")
             duration = timedelta(seconds=duration)
 
         total_duration = self.duration
