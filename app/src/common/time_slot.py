@@ -76,3 +76,21 @@ class TimeSlot:
     @property
     def duration(self) -> timedelta:
         return self.to_date - self.from_date
+
+    def split(self, duration: timedelta | int) -> list[TimeSlot]:
+        if isinstance(duration, int):
+            duration = timedelta(seconds=duration)
+
+        total_duration = self.duration
+        if total_duration.total_seconds() % duration.total_seconds() != 0:
+            raise ValueError("Slot duration not divisible by split duration")
+
+        slots = []
+        current = self.from_date
+
+        while current < self.to_date:
+            next_time = current.shift(seconds=duration.total_seconds())
+            slots.append(TimeSlot(current, next_time))
+            current = next_time
+
+        return slots
