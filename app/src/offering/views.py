@@ -50,12 +50,10 @@ class StoreOfferingDataView(APIView):
                         position_name=position_name,
                         date=offering_date
                     )
-
-                    entry = DailyOfferingEntry.objects.create(
-                        slot_length=item_data['slotLength'],
-                        values=item_data['values']
-                    )
-                    daily_offering.entries.add(entry)
+                    try:
+                        daily_offering.add_entry(item_data['slotLength'], item_data['values'])
+                    except ValueError as e:
+                        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"message": "Data stored successfully", "details": {"trading_days": trading_days}},
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

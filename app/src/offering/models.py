@@ -1,9 +1,12 @@
+from decimal import Decimal
+
 import arrow
 import pytz
 from django.db import models
 
 from common import const
 from common.slot_length import SlotLength
+from common.time_slot import TimeSlot
 
 
 # Create your models here.
@@ -47,3 +50,24 @@ class DailyOffering(models.Model):
     class Meta:
         ordering = ['date']
         indexes = [models.Index(fields=['date'])]
+
+    def add_entry(self, slot_length: int, values: list[Decimal] | list[str]) -> DailyOfferingEntry:
+        if slot_length not in dict(SlotLength.choices()).keys():
+            raise ValueError(f"Slot length must be one of the following: {dict(SlotLength.choices()).keys()}")
+        expected_values_count = len(TimeSlot.at(self.date, tz=const.trading_timezone_name).split(slot_length))
+        received_values_count = len(values)
+        if expected_values_count != received_values_count:
+            raise ValueError(f"Values count should be: {expected_values_count}, but are: {received_values_count}")
+
+        if self.pk is None:
+            self.save()
+
+        if isinstance(values[0], Decimal):
+            values = [str(v) for v in values]
+
+        entry = DailyOfferingEntry.objects.create(values=values, slot_length=slot_length)
+        self.entries.add(entry)
+        return entry
+
+    def __str__(self):
+        return f"{self.date} - {self.position_name}"
