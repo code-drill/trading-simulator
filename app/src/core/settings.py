@@ -37,11 +37,9 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ["*"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
-
     "health_check",
     "health_check.db",
     "health_check.cache",
@@ -51,35 +49,26 @@ INSTALLED_APPS = [
     "health_check.contrib.redis",
     "health_check.contrib.celery",
     "health_check.contrib.celery_ping",
-
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "django_extensions",
-
-
     "django_probes",
-
     "django_structlog",
-
-
-
     "django_celery_beat",
-
-
-
     "django_prometheus",
-
-
     "drf_yasg",
     "rest_framework",
-
 ]
 
+USER_APPS = [
+    "rules"
+]
+
+INSTALLED_APPS += USER_APPS
 
 PROMETHEUS_EXPORT_MIGRATIONS = True
 PROMETHEUS_LATENCY_BUCKETS = (
@@ -99,10 +88,6 @@ PROMETHEUS_LATENCY_BUCKETS = (
     64.0,
     float("inf"),
 )
-
-
-
-
 
 MIDDLEWARE = [
 
@@ -146,7 +131,6 @@ MEDIA_URL = "/media/"
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -181,7 +165,6 @@ else:
         }
     }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -200,7 +183,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -210,7 +192,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -224,15 +205,12 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
 SWAGGER_USE_COMPAT_RENDERERS = False
 
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,
     "SWAGGER_USE_COMPAT_RENDERERS": SWAGGER_USE_COMPAT_RENDERERS,
 }
-
-
 
 REDIS_URL = env("CELERY_BROKER_URL", default="")
 
@@ -252,7 +230,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_WORKER_PREFETCH_MULTIPLIER = env.int("CELERY_WORKER_PREFETCH_MULTIPLIER", default=10)
 CELERY_BROKER_POOL_LIMIT = env.int("CELERY_BROKER_POOL_LIMIT", default=50)
-
 
 LOGGING = {
     "version": 1,
@@ -328,6 +305,7 @@ def configure_structlog():
         logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
     )
+
 
 logging.config.dictConfig(LOGGING)
 configure_structlog()
