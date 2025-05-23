@@ -12,8 +12,8 @@ from common.time_slot import TimeSlot
 def test_create_daily_time_slot_at_utc() -> None:
     specific_day = TimeSlot.at(2023, 1, 15)
 
-    assert specific_day.from_date == Arrow(2023, 1, 15, 0, 0, 0, tzinfo=pytz.timezone("CET"))
-    assert specific_day.to_date == Arrow(2023, 1, 16, 0, 0, 0, tzinfo=pytz.timezone("CET"))
+    assert_that(specific_day.from_date).is_equal_to(Arrow(2023, 1, 15, 0, 0, 0, tzinfo=pytz.timezone("CET")))
+    assert_that(specific_day.to_date).is_equal_to(Arrow(2023, 1, 16, 0, 0, 0, tzinfo=pytz.timezone("CET")))
 
 
 def test_one_slot_within_another() -> None:
@@ -26,8 +26,8 @@ def test_one_slot_within_another() -> None:
         to_date=Arrow(2023, 1, 3, 0, 0, 0, tzinfo=pytz.timezone("CET")),
     )
 
-    assert slot1.within(slot2)
-    assert not slot2.within(slot1)
+    assert_that(slot1.within(slot2)).is_true()
+    assert_that(slot2.within(slot1)).is_false()
 
 
 def test_one_slot_is_not_within_another_if_they_just_overlap() -> None:
@@ -40,8 +40,8 @@ def test_one_slot_is_not_within_another_if_they_just_overlap() -> None:
         to_date=Arrow(2023, 1, 3, 0, 0, 0, tzinfo=pytz.timezone("CET")),
     )
 
-    assert not slot1.within(slot2)
-    assert not slot2.within(slot1)
+    assert_that(slot1.within(slot2)).is_false()
+    assert_that(slot2.within(slot1)).is_false()
 
     slot3 = TimeSlot(
         from_date=Arrow(2023, 1, 2, 0, 0, 0, tzinfo=pytz.timezone("CET")),
@@ -52,8 +52,8 @@ def test_one_slot_is_not_within_another_if_they_just_overlap() -> None:
         to_date=Arrow(2023, 1, 2, 23, 59, 59, tzinfo=pytz.timezone("CET")),
     )
 
-    assert not slot3.within(slot4)
-    assert not slot4.within(slot3)
+    assert_that(slot3.within(slot4)).is_false()
+    assert_that(slot4.within(slot3)).is_false()
 
 
 def test_slot_is_not_within_another_when_they_are_completely_outside() -> None:
@@ -66,8 +66,8 @@ def test_slot_is_not_within_another_when_they_are_completely_outside() -> None:
         to_date=Arrow(2023, 1, 3, 0, 0, 0, tzinfo=pytz.timezone("CET")),
     )
 
-    assert not slot1.within(slot2)
-    assert not slot2.within(slot1)
+    assert_that(slot1.within(slot2)).is_false()
+    assert_that(slot2.within(slot1)).is_false()
 
 
 def test_slot_is_within_itself() -> None:
@@ -76,7 +76,7 @@ def test_slot_is_within_itself() -> None:
         to_date=Arrow(2023, 1, 1, 23, 59, 59, tzinfo=pytz.timezone("CET")),
     )
 
-    assert slot1.within(slot1)
+    assert_that(slot1.within(slot1)).is_true()
 
 
 def test_slot_overlaps() -> None:
@@ -101,11 +101,11 @@ def test_slot_overlaps() -> None:
         to_date=Arrow(2022, 1, 10, tzinfo=pytz.timezone("CET")),
     )
 
-    assert slot_1.overlaps(slot_2)
-    assert slot_1.overlaps(slot_1)
-    assert slot_1.overlaps(slot_3)
-    assert slot_1.overlaps(slot_4)
-    assert slot_1.overlaps(slot_5)
+    assert_that(slot_1.overlaps(slot_2)).is_true()
+    assert_that(slot_1.overlaps(slot_1)).is_true()
+    assert_that(slot_1.overlaps(slot_3)).is_true()
+    assert_that(slot_1.overlaps(slot_4)).is_true()
+    assert_that(slot_1.overlaps(slot_5)).is_true()
 
 
 def test_slot_not_overlaps() -> None:
@@ -122,8 +122,8 @@ def test_slot_not_overlaps() -> None:
         to_date=Arrow(2022, 1, 20, tzinfo=pytz.timezone("CET")),
     )
 
-    assert not slot_1.overlaps(slot_2)
-    assert not slot_1.overlaps(slot_3)
+    assert_that(slot_1.overlaps(slot_2)).is_false()
+    assert_that(slot_1.overlaps(slot_3)).is_false()
 
 
 def test_removing_common_parts_has_no_effect_when_there_is_no_overlap() -> None:
@@ -136,7 +136,7 @@ def test_removing_common_parts_has_no_effect_when_there_is_no_overlap() -> None:
         to_date=Arrow(2022, 1, 20, tzinfo=pytz.timezone("CET")),
     )
 
-    assert slot_1.leftover_after_removing_common_with(slot_2) == [slot_1, slot_2]
+    assert_that(slot_1.leftover_after_removing_common_with(slot_2)).is_equal_to([slot_1, slot_2])
 
 
 def test_removing_common_parts_when_there_is_full_overlap() -> None:
@@ -145,7 +145,7 @@ def test_removing_common_parts_when_there_is_full_overlap() -> None:
         to_date=Arrow(2022, 1, 10, tzinfo=pytz.timezone("CET")),
     )
 
-    assert slot_1.leftover_after_removing_common_with(slot_1) == []
+    assert_that(slot_1.leftover_after_removing_common_with(slot_1)).is_equal_to([])
 
 
 def test_removing_common_parts_when_there_is_some_overlap() -> None:
@@ -160,7 +160,7 @@ def test_removing_common_parts_when_there_is_some_overlap() -> None:
 
     difference = slot_1.leftover_after_removing_common_with(slot_2)
 
-    assert difference == [
+    assert_that(difference).is_equal_to([
         TimeSlot(
             from_date=Arrow(2022, 1, 1, tzinfo=pytz.timezone("CET")),
             to_date=Arrow(2022, 1, 10, tzinfo=pytz.timezone("CET")),
@@ -169,7 +169,7 @@ def test_removing_common_parts_when_there_is_some_overlap() -> None:
             from_date=Arrow(2022, 1, 15, tzinfo=pytz.timezone("CET")),
             to_date=Arrow(2022, 1, 20, tzinfo=pytz.timezone("CET")),
         ),
-    ]
+    ])
 
     slot_3 = TimeSlot(
         from_date=Arrow(2022, 1, 5, tzinfo=pytz.timezone("CET")),
@@ -182,7 +182,7 @@ def test_removing_common_parts_when_there_is_some_overlap() -> None:
 
     difference2 = slot_3.leftover_after_removing_common_with(slot_4)
 
-    assert difference2 == [
+    assert_that(difference2).is_equal_to([
         TimeSlot(
             from_date=Arrow(2022, 1, 1, tzinfo=pytz.timezone("CET")),
             to_date=Arrow(2022, 1, 5, tzinfo=pytz.timezone("CET")),
@@ -191,7 +191,7 @@ def test_removing_common_parts_when_there_is_some_overlap() -> None:
             from_date=Arrow(2022, 1, 10, tzinfo=pytz.timezone("CET")),
             to_date=Arrow(2022, 1, 20, tzinfo=pytz.timezone("CET")),
         ),
-    ]
+    ])
 
 
 def test_removing_common_parts_when_one_slot_is_fully_within_another() -> None:
@@ -206,7 +206,7 @@ def test_removing_common_parts_when_one_slot_is_fully_within_another() -> None:
 
     difference = slot_1.leftover_after_removing_common_with(slot_2)
 
-    assert difference == [
+    assert_that(difference).is_equal_to([
         TimeSlot(
             from_date=Arrow(2022, 1, 1, tzinfo=pytz.timezone("CET")),
             to_date=Arrow(2022, 1, 10, tzinfo=pytz.timezone("CET")),
@@ -215,7 +215,7 @@ def test_removing_common_parts_when_one_slot_is_fully_within_another() -> None:
             from_date=Arrow(2022, 1, 15, tzinfo=pytz.timezone("CET")),
             to_date=Arrow(2022, 1, 20, tzinfo=pytz.timezone("CET")),
         ),
-    ]
+    ])
 
 
 def test_two_slots_have_common_part_when_overlap() -> None:
@@ -230,11 +230,11 @@ def test_two_slots_have_common_part_when_overlap() -> None:
 
     common = slot_1.common_part_with(slot_2)
 
-    assert not common.is_empty()
-    assert common == TimeSlot(
+    assert_that(common.is_empty()).is_false()
+    assert_that(common).is_equal_to(TimeSlot(
         from_date=Arrow(2022, 1, 10, tzinfo=pytz.timezone("CET")),
         to_date=Arrow(2022, 1, 15, tzinfo=pytz.timezone("CET")),
-    )
+    ))
 
 
 def test_two_slots_have_common_part_when_full_overlap() -> None:
@@ -249,8 +249,8 @@ def test_two_slots_have_common_part_when_full_overlap() -> None:
 
     common = slot_1.common_part_with(slot_2)
 
-    assert not common.is_empty()
-    assert slot_1 == common
+    assert_that(common.is_empty()).is_false()
+    assert_that(slot_1).is_equal_to(common)
 
 
 def test_split_equal_duration():
