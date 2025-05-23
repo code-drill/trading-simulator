@@ -1,0 +1,11 @@
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+      DJANGO_DOT_ENV_SOURCE: ${DJANGO_DOT_ENV_SOURCE:-.env}
+    volumes:
+      - .:/app
+    shm_size: 4gb

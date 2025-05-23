@@ -1,0 +1,10 @@
+
+web: PYTHONUNBUFFERED=true python src/manage.py runserver 0.0.0.0:8000
+
+
+
+
+worker:    /app/app/celery-entrypoint.sh
+beat:      PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus-multiproc-dir PYTHONPATH=/app/app/src PYTHONUNBUFFERED=true celery -A core beat -l INFO -S django
+
+

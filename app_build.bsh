@@ -1,0 +1,6 @@
+docker compose build
+if [ "$1" == "prod" ]; then
+  docker build -f Dockerfile --tag trading-simulator:prod .
+else
+  docker build -f Dockerfile-dev --tag trading-simulator:dev .
+fi

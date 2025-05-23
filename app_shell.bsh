@@ -1,0 +1,1 @@
+docker compose -f compose.yml run --build --remove-orphans  -P django /bin/bash

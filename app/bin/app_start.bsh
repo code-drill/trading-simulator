@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+cd "$(dirname "$(realpath "$0")")/.."
+uv run /app/app/src/manage.py migrate
+uv run honcho start

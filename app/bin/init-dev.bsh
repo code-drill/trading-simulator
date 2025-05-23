@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+export DJANGO_SUPERUSER_USERNAME=admin
+export DJANGO_SUPERUSER_EMAIL=admin@example.com
+export DJANGO_SUPERUSER_PASSWORD=abc123
+cd /app/app/src
+uv run manage.py migrate --noinput
+uv run manage.py collectstatic --noinput
+uv run manage.py createsuperuser --noinput

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+user=`id -nu $1`
+HOME=`eval echo ~$user`
+
+ln -s /app/.bash_history $HOME/.bash_history
+ln -s /app/.python_history $HOME/.python_history
+
+echo "export HOME=${HOME}" >> /etc/environment
+echo "export VIRTUAL_ENV=${HOME}/venv" >> /etc/environment
+echo "export UV_PROJECT_ENVIRONMENT=${HOME}/venv" >> /etc/environment
+cat /etc/environment >> /etc/profile
+cat /etc/environment >> $HOME/.bashrc
+cat /etc/environment >> $HOME/.profile
+cat /etc/environment >> $HOME/.bash_profile
+cat /etc/environment >> $HOME/.bash_login

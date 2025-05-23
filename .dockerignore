@@ -1,0 +1,7 @@
+!scripts/
+.bash_history
+.env
+.gitignore
+.git
+*.cmd
+db.sqlite3

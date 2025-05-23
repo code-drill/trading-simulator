@@ -1,0 +1,25 @@
+FROM bitnami/minideb:bookworm
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+ARG userid=1000
+ARG groupid=1000
+
+RUN install_packages dos2unix
+COPY app/bin/*.bsh /usr/local/bin/
+RUN dos2unix /usr/local/bin/*.bsh
+RUN chmod +x /usr/local/bin/*.bsh
+
+RUN group_init.bsh $groupid
+RUN user_init.bsh $userid $groupid
+
+WORKDIR /app
+RUN chown -R $userid:$groupid /app
+
+RUN env_vars_init.bsh $userid
+USER $userid
+
+COPY pyproject.toml /app/pyproject.toml
+RUN . /etc/environment && uv sync --group prod
+RUN mkdir -p /tmp/prometheus-multiproc-dir
+
+CMD ["uv", "run", "/home/app_user/venv/bin/gunicorn", "core.wsgi", "--bind", "0.0.0.0:8000"]
