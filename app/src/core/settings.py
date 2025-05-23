@@ -65,7 +65,8 @@ INSTALLED_APPS = [
 ]
 
 USER_APPS = [
-    "rules"
+    "rules",
+    "offering"
 ]
 
 INSTALLED_APPS += USER_APPS
