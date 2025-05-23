@@ -1,0 +1,1 @@
+trading_timezone_name = "CET"
